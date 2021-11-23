@@ -1,11 +1,8 @@
 #%% import modules
 import numpy as np
-from numpy.core.fromnumeric import shape
 import pandas as pd
 from sklearn import preprocessing
 from matplotlib import pyplot as plt
-from kmeans_old import distEclud
-from kmeas import df
 
 # %%
 # read data
@@ -125,7 +122,7 @@ def KandSSE(
         sse, iterateTimes, cent, collection = kmeans(dataSet, k=i, times=100)
         sses[i - 1] = sse
         ks[i - 1] = i
-        print("Result:\nSSE: %f, Iterate times: %d" % (sse, i))
+        # print("Result:\nSSE: %f, Iterate times: %d" % (sse, i))
         # print(cent)
     plt.plot(ks, sses, label=label)
     plt.legend(loc=0, ncol=2)
@@ -137,14 +134,14 @@ def KandSSE(
 sses, ks = KandSSE(train_data, ite=100)
 
 # %%
-# 报错K收敛曲线
+# 保存K收敛曲线
 pd.DataFrame({"K": ks.astype(int), "SSE": sses}).to_csv(
     "K_Conv.csv", index=False, sep="\t"
 )
 
 # %%
 # 主程序，数据聚类
-sse, times, cent, collection = kmeans(train_data, k=12, times=100)
+sse, times, cent, collection = kmeans(train_data, k=20, times=100)
 
 # %%
 with open("clustered.dat", "w") as f:
@@ -156,7 +153,7 @@ with open("clustered.dat", "w") as f:
 # %%
 def plotClustered(collection: dict, abnormal: dict = None, xlim: tuple = None):
     index = 1
-    color = np.random.random(size=(12, 3))
+    color = np.random.random(size=(len(collection), 3))
     if xlim is not None:
         plt.xlim(xlim)
     if abnormal is None:
@@ -257,7 +254,7 @@ new_col, abnormal, sse = checkAbnormal(cent, collection, test_data, 0.1)
 plotClustered(new_col, xlim=(70, 100))
 
 # %%
-plotClustered(new_col, abnormal, xlim=(70, 100))
+# plotClustered(new_col, abnormal, xlim=(70, 100))
 
 # %%
 def plotAbnormal(collection: dict, abnormal: dict, xlim: tuple = None):
@@ -284,3 +281,5 @@ def plotAbnormal(collection: dict, abnormal: dict, xlim: tuple = None):
 # %%
 # 绘制检测出的异常数据点
 plotAbnormal(new_col, abnormal)
+
+# %%
